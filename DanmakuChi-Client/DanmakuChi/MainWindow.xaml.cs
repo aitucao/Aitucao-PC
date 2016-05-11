@@ -39,29 +39,24 @@ namespace DanmakuChi {
         public string type;
         public string data;
     }
+
     public partial class MainWindow {
         public DanmakuCurtain dmkCurt;
         public Boolean isConnected = false;
         public WebSocket ws;
-        AiTuCaoMsg aiTuCaoMsg;
-        string room_id = null;
+        private AiTuCaoMsg aiTuCaoMsg = null;
+        private string recvBody = null;  // websocket接收内容
+        private string qrCodeUrl = null; // 二维码url
+
         public MainWindow() {
             try {
                 InitializeComponent();
 
+                // init
                 AppendLog("Welcome to DanmakuChi CSharp Client!");
-
-                // Load Configuration
-                //var content = File.ReadAllText("./config.yaml");
-                //var input = new StringReader(content);
-                //var deserializer = new Deserializer(namingConvention: new CamelCaseNamingConvention());
-                //var config = deserializer.Deserialize<Config>(input);
-
-                //textServer.Text = config.Session.server;
-                //textChannel.Text = config.Session.channel;
-                //textWechat.Text = config.Wechat.url;
                 //chkShadow.IsChecked = config.Advanced.enableShadow;
                 textServer.Text = "ws://192.168.191.1:8686";
+                textChannel.Text = "aitucao";
                 aiTuCaoMsg = new AiTuCaoMsg();
 
             } catch (Exception e) {
@@ -91,19 +86,8 @@ namespace DanmakuChi {
         }
 
         private void btnShotDmk_Click(object sender, RoutedEventArgs e) {
-            /*
-            if (dmkCurt != null) {
-                Random ran = new Random();
-                var text = "2";
-                for (var i = 0; i < ran.Next(1, 40); i += 1) {
-                    text += "3";
-                }
-                dmkCurt.Shoot(text);
-            } else {
-                MessageBox.Show("Cannot find any curtains.");
-            }
-            */
-            if(dmkCurt != null)
+
+            if (dmkCurt != null)
             {
                 dmkCurt.Hide();
                 //dmkCurt.show();
@@ -114,9 +98,9 @@ namespace DanmakuChi {
             Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => {
                 dmkCurt = new DanmakuCurtain(chkShadow.IsChecked.Value);
                 dmkCurt.Show();
-                isConnected = true;
-                btnConnect.IsEnabled = true;
-                btnConnect.Content = "Disconnect";
+                //isConnected = true;
+                //btnConnect.IsEnabled = true;
+                //btnConnect.Content = "Disconnect";
             }));
         }
         private void AppendLog(string text) {
@@ -134,16 +118,6 @@ namespace DanmakuChi {
         }
         private void button_Click(object sender, RoutedEventArgs e) {
 
-            //isConnected = true;
-            /*
-            InitDanmaku();
-            for (int i = 0; i < 1; ++i)
-            {
-                string body = "hello:" + i;
-                ShootDanmaku(body,1);//第二参数为1表示传图片，为0表示传文字
-            }
-            */
-            
             if (!isConnected) {
                 btnConnect.Content = "Connecting...";
                 btnConnect.IsEnabled = false;
@@ -155,32 +129,42 @@ namespace DanmakuChi {
                 ws = new WebSocket(server);
                 ws.OnOpen += (s, ee) =>{
                     //AppendLog("connected!");
-                    
+                    btnConnect.Content = "DisConnect";
+                    btnConnect.IsEnabled = true;
+                    isConnected = true;
+
                     aiTuCaoMsg.type = "CREATE_ROOM";
-                    aiTuCaoMsg.data = "haha";
+                    aiTuCaoMsg.data = "";
                     string json = JsonConvert.SerializeObject(aiTuCaoMsg);
                     ws.Send(json);
                 };
                 ws.OnMessage += (s, ee) => {
-                    //int dividerPos = ee.Data.IndexOf(':');
-                    int dividerPos = 1;
-                    string temp = ee.Data.ToString();
+                    
                     Console.WriteLine(ee.Data.ToString());
-                    room_id = ee.Data.ToString();
-                    string type = ee.Data.Substring(0, dividerPos);
-                    string body = ee.Data.Substring(dividerPos + 1);
-                    switch (type) {
-                        case "INFO":
-                            if (body == "OK") {
-                                AppendLog("Successfully joined " + channel);
-                                InitDanmaku();
-                            } else {
-                                AppendLog("Channel " + channel + " does not exist.");
-                                CancelDMK();
-                            }
+                    recvBody = ee.Data.ToString();
+                    // 反序列化Json的字符串
+                    AiTuCaoMsg jsonRecvBody = JsonConvert.DeserializeObject<AiTuCaoMsg>(recvBody);
+
+                    switch (jsonRecvBody.type) {
+                        case "ROOM_ID": // 房间号
+                            // 逻辑：为二维码的增加url，并初始化InitDanmuku()
+                            qrCodeUrl = jsonRecvBody.data;
+                            InitDanmaku();
+                            //} else {
+                            //    AppendLog("Channel " + channel + " does not exist.");
+                            //    CancelDMK();
+                            //}
                             break;
-                        case "DANMAKU":
-                            ShootDanmaku(body, 0);
+                        case "TEXT":
+                            ShootDanmaku(jsonRecvBody.data, 0);
+                            break;
+                        case "EMOJ":
+                            ShootDanmaku(jsonRecvBody.data, 1);
+                            break;
+                        case "PICTURE":
+                            ShootDanmaku(jsonRecvBody.data, 2);
+                            break;
+                        default:
                             break;
                     }
                 };
@@ -194,7 +178,7 @@ namespace DanmakuChi {
             
         }
         private void CancelDMK() {
-            ws.Close();
+            ws.Close(); // 调用websocket结束
             btnConnect.Content = "Connect";
             isConnected = false;
             btnConnect.IsEnabled = true;
@@ -239,9 +223,7 @@ namespace DanmakuChi {
 
         private void btnQRCode_Click(object sender, RoutedEventArgs e) {
             // QRCode qrcode = new QRCode(textWechat.Text + "?dmk_channel=" + textChannel.Text, "Channel QRCode");
-            textChannel.Text = "aitucao";
-            AiTuCaoMsg temp = JsonConvert.DeserializeObject<AiTuCaoMsg>(room_id);
-            QRCode qrcode = new QRCode(textWechat.Text + temp.data +":" + textChannel.Text, "Channel QRCode");
+            QRCode qrcode = new QRCode(textWechat.Text + qrCodeUrl +":" + textChannel.Text, "Channel QRCode");
             qrcode.Show();
         }
 
