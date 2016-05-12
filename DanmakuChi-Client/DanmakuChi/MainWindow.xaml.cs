@@ -56,7 +56,7 @@ namespace DanmakuChi {
                 AppendLog("Welcome to DanmakuChi CSharp Client!");
                 //chkShadow.IsChecked = config.Advanced.enableShadow;
                 textServer.Text = "ws://192.168.191.1:8686";
-                textChannel.Text = "aitucao";
+                //textChannel.Text = "aitucao";
                 aiTuCaoMsg = new AiTuCaoMsg();
 
             } catch (Exception e) {
@@ -134,7 +134,7 @@ namespace DanmakuChi {
                     isConnected = true;
 
                     aiTuCaoMsg.type = "CREATE_ROOM";
-                    aiTuCaoMsg.data = "";
+                    aiTuCaoMsg.data = textChannel.Text;
                     string json = JsonConvert.SerializeObject(aiTuCaoMsg);
                     ws.Send(json);
                 };
@@ -150,10 +150,6 @@ namespace DanmakuChi {
                             // 逻辑：为二维码的增加url，并初始化InitDanmuku()
                             qrCodeUrl = jsonRecvBody.data;
                             InitDanmaku();
-                            //} else {
-                            //    AppendLog("Channel " + channel + " does not exist.");
-                            //    CancelDMK();
-                            //}
                             break;
                         case "TEXT":
                             ShootDanmaku(jsonRecvBody.data, 0);
