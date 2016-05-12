@@ -223,7 +223,7 @@ namespace DanmakuChi {
 
         private void btnQRCode_Click(object sender, RoutedEventArgs e) {
             // QRCode qrcode = new QRCode(textWechat.Text + "?dmk_channel=" + textChannel.Text, "Channel QRCode");
-            QRCode qrcode = new QRCode(textWechat.Text + qrCodeUrl +":" + textChannel.Text, "Channel QRCode");
+            QRCode qrcode = new QRCode(textWechat.Text + qrCodeUrl +":" + textChannel.Text, qrCodeUrl, "Channel QRCode");
             qrcode.Show();
         }
 
