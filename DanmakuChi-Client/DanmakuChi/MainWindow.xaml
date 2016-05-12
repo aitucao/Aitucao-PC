@@ -23,7 +23,7 @@
                 <Button x:Name="btnQRCode" Content="生成二维码" HorizontalAlignment="Right" VerticalAlignment="Top" Width="77" Height="26" Click="btnQRCode_Click" Margin="0,84,10,0"/>
                 <Label x:Name="labelServer" Content="Server" HorizontalAlignment="Left" Margin="8,15,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
                 <TextBox x:Name="textServer" HorizontalAlignment="Left" Height="25" Margin="10,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" VerticalContentAlignment="Center" Visibility="Hidden"/>
-                <Label x:Name="labelChannel" Content="房间号" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                <Label x:Name="labelChannel" Content="房间名称" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
                 <TextBox x:Name="textChannel" HorizontalAlignment="Left" Height="25" Margin="10,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" VerticalContentAlignment="Center"/>
             </Grid>
         </GroupBox>
