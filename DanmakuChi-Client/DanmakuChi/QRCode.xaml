@@ -4,11 +4,25 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DanmakuChi"
+        ResizeMode="NoResize"
         mc:Ignorable="d"
-        Title="QRCode" Width="360" Height="360">
+        WindowStyle="SingleBorderWindow"
+        Title="QRCode" Width="460" Height="550">
+    <Window.Background>
+        <SolidColorBrush Opacity="0.8" Color="White"/>
+    </Window.Background>
     <Grid>
-        <Image x:Name="imgBox" Margin="20,20,20,40"/>
-        <TextBox x:Name="textBox" Margin="20,0,20,10" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Bottom" Height="24" VerticalContentAlignment="Center"/>
-
+        <Image x:Name="imgBox" Margin="20,20,20,90"/>
+        <!--<TextBox x:Name="textBox" Margin="10,0,10,10" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Bottom" Height="24" VerticalContentAlignment="Center"/>-->
+        <Label x:Name="label1" Content="1" HorizontalAlignment="Left" Margin="20,440,0,0" VerticalAlignment="Top" Height="60" FontSize="22" Width="60" HorizontalContentAlignment="Center"
+               VerticalContentAlignment="Center"/>
+        <Label x:Name="label2" Content="2" HorizontalAlignment="Left" Margin="100,440,0,0" VerticalAlignment="Top" Height="60" FontSize="22" Width="60" HorizontalContentAlignment="Center"
+               VerticalContentAlignment="Center"/>
+        <Label x:Name="label3" Content="3" HorizontalAlignment="Right" Margin="0,440,200,0" VerticalAlignment="Top" Height="60" FontSize="22" Width="60" HorizontalContentAlignment="Center"
+               VerticalContentAlignment="Center"/>
+        <Label x:Name="label4" Content="4" HorizontalAlignment="Right" Margin="0,440,110,0" VerticalAlignment="Top" Height="60" FontSize="22" Width="60" HorizontalContentAlignment="Center"
+               VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
+        <Label x:Name="label5" Content="5" HorizontalAlignment="Right" Margin="0,440,20,0" VerticalAlignment="Top" Height="60" FontSize="22" Width="60" HorizontalContentAlignment="Center"
+               VerticalContentAlignment="Center" Grid.Column="1"/>
     </Grid>
 </Window>
