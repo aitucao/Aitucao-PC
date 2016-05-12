@@ -57,11 +57,16 @@ namespace DanmakuChi {
         //TODO: Optimizing the performance of danmaku animation with shadow.
         public EmojiDanmaku(string path)
         {
-            FontSize = 12;
-            Text = "";
+            FontSize = 24;
             Foreground = Brushes.White;
-            Background = new ImageBrush(new BitmapImage(new Uri(@"../b.png", UriKind.RelativeOrAbsolute)));
-
+            ImageSource img = new BitmapImage(new Uri(@path, UriKind.RelativeOrAbsolute));
+            //自适应图片大小
+            // Height = img.Height;
+            //Width = img.Width;
+            //固定图片大小
+            Height = 80;
+            Width = 80;
+            Background = new ImageBrush(img);
             Effect = new DropShadowEffect
             {
                 Color = Colors.Black,

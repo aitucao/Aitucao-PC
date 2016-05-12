@@ -47,13 +47,23 @@ namespace DanmakuChi {
         private AiTuCaoMsg aiTuCaoMsg = null;
         private string recvBody = null;  // websocket接收内容
         private string qrCodeUrl = null; // 二维码url
-
+        public Dictionary<string, string> emoji_map;//emoji映射
         public MainWindow() {
             try {
                 InitializeComponent();
 
                 // init
                 AppendLog("Welcome to DanmakuChi CSharp Client!");
+                //读取弹幕配置文件
+                emoji_map = new Dictionary<string, string>();
+                var con_moj = File.ReadAllText("../emoji_con");
+                var input_moj = new StringReader(con_moj);
+                string tmp;
+                while ((tmp = input_moj.ReadLine()) != null)
+                {
+                    string[] sArray = tmp.Split(',');
+                    emoji_map.Add(sArray[1], sArray[0]);
+                }
                 //chkShadow.IsChecked = config.Advanced.enableShadow;
                 textServer.Text = "ws://192.168.191.1:8686";
                 //textChannel.Text = "aitucao";
@@ -155,8 +165,14 @@ namespace DanmakuChi {
                             ShootDanmaku(jsonRecvBody.data, 0);
                             break;
                         case "EMOJ":
-                            ShootDanmaku(jsonRecvBody.data, 1);
-                            break;
+                            {
+                                string tmp = "";
+                                emoji_map.TryGetValue(jsonRecvBody.data, out tmp);//传进去"[鬼脸]"等emoji代码
+                                string path = "../emoji/" + tmp;
+                                ShootDanmaku(path, 1);
+                                break;
+                            }
+
                         case "PICTURE":
                             ShootDanmaku(jsonRecvBody.data, 2);
                             break;
